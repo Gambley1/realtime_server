@@ -13,7 +13,7 @@ Future<Response> onRequest(RequestContext context) async {
         final db = context.read<Database>();
         final connection = await db.currentConnection;
 
-        await connection.execute('LISTEN posts_changes');
+        await connection.execute('LISTEN posts_changed_channel');
 
         connection.notifications.listen(
           (notification) {

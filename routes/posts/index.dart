@@ -164,14 +164,6 @@ Future<Response> _updatePost(RequestContext context) async {
     final db = context.read<Database>();
     final postsRepository = PostsRepository(db: db);
 
-    final connection = await db.currentConnection;
-
-    await connection.execute('''
-
-      
-    
-    ''');
-
     if (like != null) {
       await postsRepository.likePost(id: id, like: like);
     } else {
