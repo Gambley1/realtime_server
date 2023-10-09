@@ -15,6 +15,12 @@
 */
 
 enum ErrorCode {
+  unexpectedError('UNEXPECTED_ERROR'),
+
+  databaseConnectionError('DATABASE_CONNECTION_ERROR'),
+
+  missingRequestBody('MISSING_REQUEST_BODY'),
+
   methodNotAllowed('METHOD_NOT_ALLOWED');
 
   const ErrorCode(this.value);

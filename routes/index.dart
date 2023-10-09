@@ -2,7 +2,7 @@
  * ----------------------------------------------------------------------------
  *
  * This file is part of the metal_bonus_backend project, available at:
- * https://github.com/Gambley1/realtime_server/
+ * https://github.com/Gambley1/realtime_server
  *
  * Created by: Emil Zulufov
  * ----------------------------------------------------------------------------
