@@ -1,0 +1,22 @@
+name: realtime_server
+description: An new Dart Frog application
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  dart_frog: ^1.0.0
+  dart_frog_web_socket: ^1.0.0
+  equatable: ^2.0.5
+  # stormberry: ^0.13.1
+  intl: ^0.18.1
+  stormberry:
+    git: https://github.com/Gambley1/stormberry
+  web_socket_client: ^0.1.0
+
+dev_dependencies:
+  mocktail: ^1.0.0
+  test: ^1.19.2
+  very_good_analysis: ^5.1.0
