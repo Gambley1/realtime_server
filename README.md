@@ -4,7 +4,9 @@
 [![License: MIT][license_badge]][license_link]
 [![Powered by Dart Frog](https://img.shields.io/endpoint?url=https://tinyurl.com/dartfrog-badge)](https://dartfrog.vgv.dev)
 
-An example application built with dart_frog
+Realtime server is an example backend application, developed
+in test purposes. In this playground I test and try to integrate
+some cool features, like real-time database, notifications and such.
 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
