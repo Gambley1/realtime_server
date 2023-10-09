@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:realtime_server/src/data/models/postgres/db_post.dart';
 
 class Post {
@@ -19,4 +22,15 @@ class Post {
   final String userId;
   final String description;
   final List<String> likes;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'userId': userId,
+      'description': description,
+      'likes': likes,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 }

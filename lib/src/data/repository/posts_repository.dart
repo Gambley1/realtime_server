@@ -40,10 +40,16 @@ class PostsRepository implements PostsDataSource, PostsLikesSource {
     String? like,
     List<String>? likes,
   }) async {
+    final likes$ = <String>[...?likes];
+    if (likes$.contains(like)) {
+      likes$.remove(like);
+    } else {
+      likes$.add(like!);
+    }
     await _db.dbPosts.updateOne(
       DbPostUpdateRequest(
         id: id,
-        likes: [...?likes, like ?? ''],
+        likes: likes$,
         description: description,
       ),
     );
@@ -67,7 +73,8 @@ class PostsRepository implements PostsDataSource, PostsLikesSource {
     //TODO(): throw an actuall PostNotFound exception.
     if (row == null) throw Exception('Post not found!');
 
-    final likes = result.expand((element) => element).toList().cast<String>();
+    final likes = row.firstOrNull as List<String>?;
+    if (likes == null) throw Exception('Post not found!');
     return likes;
   }
 

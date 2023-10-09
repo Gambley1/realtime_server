@@ -72,7 +72,7 @@ Future<Response> _createPost(RequestContext context) async {
     await postRepository.createPost(userId: userId, description: description);
     print('Successfully create post!');
     return Response(
-      body: 'Successfully create post!',
+      body: 'Successfully created post!',
     );
   } on SocketException {
     print('[Posts.create] Can not connect to the database.');
@@ -163,6 +163,14 @@ Future<Response> _updatePost(RequestContext context) async {
   try {
     final db = context.read<Database>();
     final postsRepository = PostsRepository(db: db);
+
+    final connection = await db.currentConnection;
+
+    await connection.execute('''
+
+      
+    
+    ''');
 
     if (like != null) {
       await postsRepository.likePost(id: id, like: like);
