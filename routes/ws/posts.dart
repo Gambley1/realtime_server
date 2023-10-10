@@ -6,15 +6,29 @@ import 'package:dart_frog_web_socket/dart_frog_web_socket.dart';
 import 'package:intl/intl.dart';
 import 'package:stormberry/stormberry.dart';
 
+final clients = <WebSocketChannel>[];
+
 Future<Response> onRequest(RequestContext context) async {
   final handler = webSocketHandler(
     (channel, protocol) async {
+      clients.add(channel);
+      print('Active clients: ${clients.length}');
+
+      late Database db;
+      late PostgreSQLConnection connection;
       try {
-        final db = context.read<Database>();
-        final connection = await db.currentConnection;
+        db = context.read<Database>();
+        connection = await db.currentConnection;
 
         await connection.execute('LISTEN posts_changed_channel');
+      } catch (e) {
+        print('Database connection error: $e');
+        db = context.read<Database>();
+        connection = await db.currentConnection;
 
+        await connection.execute('LISTEN posts_changed_channel');
+      }
+      try {
         connection.notifications.listen(
           (notification) {
             print('Notification: ${notification.detailedJson()}');
@@ -27,9 +41,11 @@ Future<Response> onRequest(RequestContext context) async {
             print('Error, listening to the connection notifications.');
             print(e);
           },
-          onDone: () =>
-              print('On done, listening to the connection notifications'),
-          cancelOnError: true,
+          onDone: () {
+            clients.remove(channel);
+            print('On done, listening to the connection notifications');
+          },
+          // cancelOnError: true,
         );
       } on SocketException {
         print('Can not connect to the database, reconnect.');

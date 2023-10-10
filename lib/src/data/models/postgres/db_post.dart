@@ -2,7 +2,9 @@ import 'package:stormberry/stormberry.dart';
 
 part 'db_post.schema.dart';
 
-@Model(tableName: 'Post')
+@Model(
+  tableName: 'Post',
+)
 abstract class DbPost {
   @PrimaryKey()
   String get id;

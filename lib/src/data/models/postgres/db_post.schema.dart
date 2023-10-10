@@ -39,7 +39,7 @@ class _DbPostRepository extends BaseRepository
   @override
   Future<void> insert(List<DbPostInsertRequest> requests) async {
     if (requests.isEmpty) return;
-    var values = QueryValues();
+    final values = QueryValues();
     await db.query(
       'INSERT INTO "Post" ( "id", "user_id", "description", "likes" )\n'
       'VALUES ${requests.map((r) => '( ${values.add(r.id)}:text, ${values.add(r.userId)}:text, ${values.add(r.description)}:text, ${values.add(r.likes)}:_text )').join(', ')}\n',
@@ -50,7 +50,7 @@ class _DbPostRepository extends BaseRepository
   @override
   Future<void> update(List<DbPostUpdateRequest> requests) async {
     if (requests.isEmpty) return;
-    var values = QueryValues();
+    final values = QueryValues();
     await db.query(
       'UPDATE "Post"\n'
       'SET "user_id" = COALESCE(UPDATED."user_id", "Post"."user_id"), "description" = COALESCE(UPDATED."description", "Post"."description"), "likes" = COALESCE(UPDATED."likes", "Post"."likes")\n'
@@ -109,7 +109,7 @@ class DbPostViewQueryable extends KeyedViewQueryable<DbPostView, String> {
       id: map.get('id'),
       userId: map.get('user_id'),
       description: map.get('description'),
-      likes: map.getListOpt('likes') ?? const []);
+      likes: map.getListOpt('likes') ?? const [],);
 }
 
 class DbPostView {
