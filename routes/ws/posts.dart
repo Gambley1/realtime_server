@@ -41,7 +41,7 @@ Future<Response> onRequest(RequestContext context) async {
           cancelOnError: true,
         );
 
-        await Future.delayed(Duration.zero, connection.close);
+        // await Future.delayed(Duration.zero, connection.close);
       } on SocketException {
         print('Can not connect to the database, reconnect.');
         rethrow;
