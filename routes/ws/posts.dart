@@ -21,7 +21,7 @@ Future<Response> onRequest(RequestContext context) async {
 
         await connection.execute('LISTEN posts_changed_channel');
 
-        final subscription = connection.notifications.listen(
+        connection.notifications.listen(
           (notification) {
             print('Notification: ${notification.detailedJson()}');
 
@@ -41,8 +41,7 @@ Future<Response> onRequest(RequestContext context) async {
           cancelOnError: true,
         );
 
-        print('Cancel subscription.');
-        await subscription.cancel();
+        await Future.delayed(Duration.zero, connection.close);
       } on SocketException {
         print('Can not connect to the database, reconnect.');
         rethrow;
