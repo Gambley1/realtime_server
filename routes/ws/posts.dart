@@ -14,22 +14,14 @@ Future<Response> onRequest(RequestContext context) async {
       clients.add(channel);
       print('Active clients: ${clients.length}');
 
-      late Database db;
-      late PostgreSQLConnection connection;
       try {
-        db = context.read<Database>();
-        connection = await db.currentConnection;
+        final db = context.read<Database>();
+        final connection = db.connection();
+        await connection.open();
 
         await connection.execute('LISTEN posts_changed_channel');
-      } catch (e) {
-        print('Database connection error: $e');
-        db = context.read<Database>();
-        connection = await db.currentConnection;
 
-        await connection.execute('LISTEN posts_changed_channel');
-      }
-      try {
-        connection.notifications.listen(
+        final subscription = connection.notifications.listen(
           (notification) {
             print('Notification: ${notification.detailedJson()}');
 
@@ -40,13 +32,17 @@ Future<Response> onRequest(RequestContext context) async {
           onError: (dynamic e) {
             print('Error, listening to the connection notifications.');
             print(e);
+            clients.remove(channel);
           },
           onDone: () {
             clients.remove(channel);
             print('On done, listening to the connection notifications');
           },
-          // cancelOnError: true,
+          cancelOnError: true,
         );
+
+        print('Cancel subscription.');
+        await subscription.cancel();
       } on SocketException {
         print('Can not connect to the database, reconnect.');
         rethrow;

@@ -11,10 +11,10 @@ dependencies:
   dart_frog_web_socket: ^1.0.0
   dotenv: ^4.1.0
   equatable: ^2.0.5
-  # stormberry: ^0.13.1
+  stormberry: ^0.13.1
   intl: ^0.18.1
-  stormberry:
-    git: https://github.com/Gambley1/stormberry
+  # stormberry:
+  #   git: https://github.com/Gambley1/stormberry
   uuid: ^4.1.0
   web_socket_client: ^0.1.0
 
