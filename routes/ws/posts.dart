@@ -61,6 +61,7 @@ Future<Response> onRequest(RequestContext context) async {
             clients.remove(channel);
             channel.sink.close();
             connection.close();
+            print('Active clients: ${clients.length}');
           },
           onError: print,
           cancelOnError: true,
