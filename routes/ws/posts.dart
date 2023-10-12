@@ -56,7 +56,12 @@ Future<Response> onRequest(RequestContext context) async {
               print('Active clients: ${clients.length}');
             }
           },
-          onDone: () => print('On done'),
+          onDone: () {
+            print('On done channel stream');
+            clients.remove(channel);
+            channel.sink.close();
+            connection.close();
+          },
           onError: print,
           cancelOnError: true,
         );
