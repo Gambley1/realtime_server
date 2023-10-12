@@ -11,9 +11,6 @@ final clients = <WebSocketChannel>[];
 Future<Response> onRequest(RequestContext context) async {
   final handler = webSocketHandler(
     (channel, protocol) async {
-      clients.add(channel);
-      print('Active clients: ${clients.length}');
-
       try {
         final db = context.read<Database>();
         final connection = db.connection();
@@ -21,6 +18,9 @@ Future<Response> onRequest(RequestContext context) async {
 
         await connection.execute('LISTEN posts_changed_channel');
 
+        clients.add(channel);
+        print('Active clients: ${clients.length}');
+        
         connection.notifications.listen(
           (notification) {
             print('Notification: ${notification.detailedJson()}');
