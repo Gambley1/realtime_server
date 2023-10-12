@@ -70,12 +70,10 @@ Future<Response> _createPost(RequestContext context) async {
     final postRepository = PostsRepository(db: db);
 
     await postRepository.createPost(userId: userId, description: description);
-    print('Successfully create post!');
     return Response(
       body: 'Successfully created post!',
     );
   } on SocketException {
-    print('[Posts.create] Can not connect to the database.');
     return Response.json(
       statusCode: HttpStatus.serviceUnavailable,
       body: {
@@ -84,12 +82,10 @@ Future<Response> _createPost(RequestContext context) async {
       },
     );
   } catch (e) {
-    print('[Posts.create] Unexpected error occured.');
-    print('Error: $e');
     return Response.json(
       statusCode: HttpStatus.internalServerError,
       body: {
-        'error': e,
+        'error': '$e',
         'code': ErrorCode.unexpectedError.value,
         'message': 'An unexpected error occured. Please try again later.',
       },
@@ -110,7 +106,6 @@ Future<Response> _getPosts(RequestContext context) async {
       },
     );
   } on SocketException {
-    print('[Posts.get] Can not connect to the database.');
     return Response.json(
       statusCode: HttpStatus.serviceUnavailable,
       body: {
@@ -119,12 +114,10 @@ Future<Response> _getPosts(RequestContext context) async {
       },
     );
   } catch (e) {
-    print('[Posts.get] Unexpected error occured.');
-    print('Error: $e');
     return Response.json(
       statusCode: HttpStatus.internalServerError,
       body: {
-        'error': e,
+        'error': '$e',
         'code': ErrorCode.unexpectedError.value,
         'message': 'An unexpected error occured. Please try again later.',
       },
@@ -177,7 +170,6 @@ Future<Response> _updatePost(RequestContext context) async {
       body: 'Successfully updated post!',
     );
   } on SocketException {
-    print('[Posts.update] Can not connect to the database.');
     return Response.json(
       statusCode: HttpStatus.serviceUnavailable,
       body: {
@@ -186,12 +178,10 @@ Future<Response> _updatePost(RequestContext context) async {
       },
     );
   } catch (e) {
-    print('[Posts.update] Unexpected error occured.');
-    print('Error: $e');
     return Response.json(
       statusCode: HttpStatus.internalServerError,
       body: {
-        'error': e,
+        'error': '$e',
         'code': ErrorCode.unexpectedError.value,
         'message': 'An unexpected error occured. Please try again later.',
       },
@@ -235,7 +225,6 @@ Future<Response> _deletePost(RequestContext context) async {
       body: 'Successfully deleted post!',
     );
   } on SocketException {
-    print('[Posts.delete] Can not connect to the database.');
     return Response.json(
       statusCode: HttpStatus.serviceUnavailable,
       body: {
@@ -244,8 +233,6 @@ Future<Response> _deletePost(RequestContext context) async {
       },
     );
   } catch (e) {
-    print('[Posts.delete] Unexpected error occured.');
-    print('Error: $e');
     return Response.json(
       statusCode: HttpStatus.internalServerError,
       body: {

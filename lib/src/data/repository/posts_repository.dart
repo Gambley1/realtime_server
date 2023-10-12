@@ -67,14 +67,11 @@ class PostsRepository implements PostsDataSource, PostsLikesSource {
       SELECT likes FROM "Post" WHERE id = @id
     ''';
     final result = await _db.query(query, {'id': id});
-    print('PostgreSQLResult: $result');
     final row = result.firstOrNull;
-    print('PostgreSQLResultRow: $row');
     //TODO(): throw an actuall PostNotFound exception.
     if (row == null) throw Exception('Post not found!');
 
-    final likes = row.firstOrNull as List<String>?;
-    if (likes == null) throw Exception('Post not found!');
+    final likes = row.first as List<String>;
     return likes;
   }
 
