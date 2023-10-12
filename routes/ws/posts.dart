@@ -33,15 +33,33 @@ Future<Response> onRequest(RequestContext context) async {
             print('Error, listening to the connection notifications.');
             print(e);
             clients.remove(channel);
+            channel.sink.close();
+            connection.close();
           },
           onDone: () {
             clients.remove(channel);
+            channel.sink.close();
+            connection.close();
             print('On done, listening to the connection notifications');
           },
           cancelOnError: true,
         );
 
-        // await Future.delayed(Duration.zero, connection.close);
+        channel.stream.listen(
+          (message) {
+            print('Channel message $message');
+            if (message == '__disconnect__') {
+              print('Disconnect and removing channel');
+              clients.remove(channel);
+              channel.sink.close();
+              connection.close();
+              print('Active clients: ${clients.length}');
+            }
+          },
+          onDone: () => print('On done'),
+          onError: print,
+          cancelOnError: true,
+        );
       } on SocketException {
         print('Can not connect to the database, reconnect.');
         rethrow;
