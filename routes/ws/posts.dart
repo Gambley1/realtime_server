@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_web_socket/dart_frog_web_socket.dart';
 import 'package:intl/intl.dart';
+import 'package:realtime_server/_internal.dart';
 import 'package:stormberry/stormberry.dart';
 
 final clients = <WebSocketChannel>[];
@@ -16,11 +18,11 @@ Future<Response> onRequest(RequestContext context) async {
         final connection = db.connection();
         await connection.open();
 
-        await connection.execute('LISTEN posts_changed_channel');
+        await connection.postsFuncTriggers.listen();
 
         clients.add(channel);
         print('Active clients: ${clients.length}');
-        
+
         connection.notifications.listen(
           (notification) {
             print('Notification: ${notification.detailedJson()}');
@@ -86,10 +88,8 @@ extension on Notification {
         'proccessId': processID,
       };
 
-  String toJson() => jsonEncode(toMap());
-
   Map<String, dynamic> detailed() => {
-        'notification': toJson(),
+        'notification': toMap(),
         'createdAt': DateTime.now().prettier(),
       };
 

@@ -157,14 +157,11 @@ Future<Response> _updatePost(RequestContext context) async {
     final db = context.read<Database>();
     final postsRepository = PostsRepository(db: db);
 
-    if (like != null) {
-      await postsRepository.likePost(id: id, like: like);
-    } else {
-      await postsRepository.updatePost(
-        id: id,
-        description: description,
-      );
-    }
+    await postsRepository.updatePost(
+      id: id,
+      like: like,
+      description: description,
+    );
 
     return Response(
       body: 'Successfully updated post!',
@@ -205,7 +202,7 @@ Future<Response> _deletePost(RequestContext context) async {
 
   if (body == null) {
     return Response.json(
-      statusCode: HttpStatus.notAcceptable,
+      statusCode: HttpStatus.badRequest,
       body: {
         'error': 'Missing request body.',
         'code': ErrorCode.missingRequestBody.value,
@@ -213,7 +210,16 @@ Future<Response> _deletePost(RequestContext context) async {
     );
   }
 
-  final id = body['postId'] as String;
+  final id = body['postId'] as String?;
+  if (id == null) {
+    return Response.json(
+      statusCode: HttpStatus.badRequest,
+      body: {
+        'error': 'Post id is null, can not delete post.',
+        'code': ErrorCode.missingRequestBody.value,
+      },
+    );
+  }
 
   try {
     final db = context.read<Database>();
@@ -233,10 +239,20 @@ Future<Response> _deletePost(RequestContext context) async {
       },
     );
   } catch (e) {
+    if (e is PostNotFound) {
+      return Response.json(
+        statusCode: HttpStatus.notFound,
+        body: {
+          'error': e.error,
+          'code': ErrorCode.postNotFound.value,
+        },
+      );
+    }
+
     return Response.json(
       statusCode: HttpStatus.internalServerError,
       body: {
-        'error': e,
+        'error': '$e',
         'code': ErrorCode.unexpectedError.value,
         'message': 'An unexpected error occured. Please try again later.',
       },

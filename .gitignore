@@ -17,3 +17,4 @@ coverage/
 
 # Env
 .env
+lib/src/data/models/postgres/db_post.schema.dart

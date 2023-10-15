@@ -26,7 +26,7 @@ class UuidGenerator {
   static final _uuid = Uuid(goptions: GlobalOptions(CryptoRNG._()));
 
   /// Generate random user id based on ['Uuid'] library
-  static String generateRandomv4Uid() => _uuid.v4();
+  static String v4() => _uuid.v4();
 }
 
 /// {@template crypto_rng}

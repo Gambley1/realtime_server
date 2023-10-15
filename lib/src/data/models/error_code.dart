@@ -21,7 +21,9 @@ enum ErrorCode {
 
   missingRequestBody('MISSING_REQUEST_BODY'),
 
-  methodNotAllowed('METHOD_NOT_ALLOWED');
+  methodNotAllowed('METHOD_NOT_ALLOWED'),
+
+  postNotFound('POST_NOT_FOUND');
 
   const ErrorCode(this.value);
 

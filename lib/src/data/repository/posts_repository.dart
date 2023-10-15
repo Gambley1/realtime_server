@@ -1,10 +1,34 @@
 import 'package:realtime_server/_internal.dart';
 import 'package:stormberry/stormberry.dart';
 
-class PostsRepository implements PostsDataSource, PostsLikesSource {
+abstract class PostsException implements Exception {
+  const PostsException(this.error);
+
+  final Object error;
+
+  @override
+  String toString() => 'PostsException: $error';
+}
+
+final class PostNotFound extends PostsException {
+  const PostNotFound() : super('Post not found!');
+
+  @override
+  String toString() => 'PostNotFound: $error';
+}
+
+class PostsRepository implements PostsDataSource {
   PostsRepository({required Database db}) : _db = db;
 
   final Database _db;
+
+  Future<bool> _postExists({required String id}) async {
+    final exists =
+        ((await _db.query('SELECT check_post_exists(@postId)', {'postId': id}))
+            .first
+            .first) as bool;
+    return exists;
+  }
 
   @override
   Future<void> createPost({
@@ -13,7 +37,7 @@ class PostsRepository implements PostsDataSource, PostsLikesSource {
   }) =>
       _db.dbPosts.insertOne(
         DbPostInsertRequest(
-          id: UuidGenerator.generateRandomv4Uid(),
+          id: UuidGenerator.v4(),
           userId: userId,
           description: description,
           likes: [],
@@ -34,51 +58,32 @@ class PostsRepository implements PostsDataSource, PostsLikesSource {
   }
 
   @override
+  Future<Post?> readPost({required String id}) async {
+    final dbPost = await _db.dbPosts.queryDbPost(id);
+    if (dbPost == null) return null;
+    return Post.fromDb(dbPost);
+  }
+
+  @override
   Future<void> updatePost({
     required String id,
     String? description,
     String? like,
-    List<String>? likes,
-  }) async {
-    final likes$ = <String>[...?likes];
-    if (likes$.contains(like)) {
-      likes$.remove(like);
-    } else {
-      likes$.add(like!);
-    }
-    await _db.dbPosts.updateOne(
-      DbPostUpdateRequest(
-        id: id,
-        likes: likes$,
-        description: description,
-      ),
-    );
-  }
+  }) =>
+      _db.query('SELECT update_post(@postId, @like, @new_description);', {
+        'like': like,
+        'postId': id,
+        'new_description': description,
+      });
 
   @override
   Future<void> deletePost({
     required String id,
-  }) =>
-      _db.dbPosts.deleteOne(id);
+  }) async {
+    final exists = await _postExists(id: id);
+    if (!exists) throw const PostNotFound();
 
-  @override
-  Future<List<String>> readLikes({required String id}) async {
-    const query = '''
-      SELECT likes FROM "Post" WHERE id = @id
-    ''';
-    final result = await _db.query(query, {'id': id});
-    final row = result.firstOrNull;
-    //TODO(): throw an actuall PostNotFound exception.
-    if (row == null) throw Exception('Post not found!');
-
-    final likes = row.first as List<String>;
-    return likes;
-  }
-
-  @override
-  Future<void> likePost({required String id, required String like}) async {
-    final likes = await readLikes(id: id);
-    await updatePost(id: id, like: like, likes: likes);
+    await _db.dbPosts.deleteOne(id);
   }
 }
 
@@ -90,6 +95,8 @@ abstract class PostsDataSource {
 
   Future<List<Post>> readPosts();
 
+  Future<Post?> readPost({required String id});
+
   Future<void> updatePost({
     required String id,
     String? description,
@@ -99,10 +106,4 @@ abstract class PostsDataSource {
   Future<void> deletePost({
     required String id,
   });
-}
-
-abstract class PostsLikesSource {
-  Future<List<String>> readLikes({required String id});
-
-  Future<void> likePost({required String id, required String like});
 }
